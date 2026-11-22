@@ -1,0 +1,486 @@
+{
+  "entities": {
+    "AdminRole": {
+      "title": "AdminRole",
+      "description": "Authorized hospital administrator record.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "email": { "type": "string" },
+        "hospitalId": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "email", "createdAt"]
+    },
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "User profile for Patient, Doctor, or Hospital Admin with PII isolated to owner/admin.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "fullName": { "type": "string" },
+        "mobile": { "type": "string" },
+        "email": { "type": "string" },
+        "age": { "type": "integer" },
+        "gender": { "type": "string" },
+        "address": { "type": "string" },
+        "bloodGroup": { "type": "string" },
+        "emergencyContact": { "type": "string" },
+        "photoUri": { "type": "string" },
+        "role": { "type": "string", "enum": ["patient", "doctor", "hospital_admin"] },
+        "hospitalId": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "fullName", "email", "role", "createdAt", "updatedAt"]
+    },
+    "Hospital": {
+      "title": "Hospital",
+      "description": "Hospital facility directory and live bed/emergency capacity.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "imageKey": { "type": "string" },
+        "address": { "type": "string" },
+        "contactNumber": { "type": "string" },
+        "opdTimings": { "type": "string" },
+        "emergencyAvailable": { "type": "boolean" },
+        "icuAvailable": { "type": "boolean" },
+        "totalBeds": { "type": "integer" },
+        "availableBeds": { "type": "integer" },
+        "occupiedBeds": { "type": "integer" },
+        "icuBedsTotal": { "type": "integer" },
+        "icuBedsAvailable": { "type": "integer" },
+        "emergencyBedsTotal": { "type": "integer" },
+        "emergencyBedsAvailable": { "type": "integer" },
+        "rating": { "type": "number" },
+        "latitude": { "type": "number" },
+        "longitude": { "type": "number" },
+        "adminUid": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "address", "contactNumber", "opdTimings", "emergencyAvailable", "icuAvailable", "totalBeds", "availableBeds", "occupiedBeds", "adminUid", "createdAt", "updatedAt"]
+    },
+    "Doctor": {
+      "title": "Doctor",
+      "description": "Doctor profile, schedule, fees, and daily OPD capacity.",
+      "type": "object",
+      "properties": {
+        "hospitalId": { "type": "string" },
+        "hospitalName": { "type": "string" },
+        "staffUid": { "type": "string" },
+        "name": { "type": "string" },
+        "qualification": { "type": "string" },
+        "speciality": { "type": "string" },
+        "experienceYears": { "type": "integer" },
+        "consultationFee": { "type": "number" },
+        "availableDays": { "type": "string" },
+        "workingHours": { "type": "string" },
+        "dailyCapacity": { "type": "integer" },
+        "available": { "type": "boolean" },
+        "rating": { "type": "number" },
+        "adminUid": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["hospitalId", "hospitalName", "name", "qualification", "speciality", "experienceYears", "consultationFee", "dailyCapacity", "available", "adminUid", "createdAt", "updatedAt"]
+    },
+    "DoctorSlot": {
+      "title": "DoctorSlot",
+      "description": "Atomic daily OPD slot availability counter per doctor and date.",
+      "type": "object",
+      "properties": {
+        "doctorId": { "type": "string" },
+        "hospitalId": { "type": "string" },
+        "date": { "type": "string" },
+        "dailyCapacity": { "type": "integer" },
+        "bookedCount": { "type": "integer" },
+        "availableCount": { "type": "integer" },
+        "bookedSlots": { "type": "array" },
+        "adminUid": { "type": "string" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["doctorId", "hospitalId", "date", "dailyCapacity", "bookedCount", "availableCount", "bookedSlots", "updatedAt"]
+    },
+    "Appointment": {
+      "title": "Appointment",
+      "description": "Patient OPD appointment with serial number and real-time status.",
+      "type": "object",
+      "properties": {
+        "patientId": { "type": "string" },
+        "patientName": { "type": "string" },
+        "patientPhone": { "type": "string" },
+        "hospitalId": { "type": "string" },
+        "hospitalName": { "type": "string" },
+        "doctorId": { "type": "string" },
+        "doctorName": { "type": "string" },
+        "doctorUid": { "type": "string" },
+        "speciality": { "type": "string" },
+        "date": { "type": "string" },
+        "timeSlot": { "type": "string" },
+        "serialNumber": { "type": "integer" },
+        "status": { "type": "string", "enum": ["CONFIRMED", "IN_CONSULTATION", "COMPLETED", "CANCELLED"] },
+        "consultationFee": { "type": "number" },
+        "symptoms": { "type": "string" },
+        "adminUid": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["patientId", "patientName", "hospitalId", "hospitalName", "doctorId", "doctorName", "date", "timeSlot", "serialNumber", "status", "consultationFee", "adminUid", "createdAt", "updatedAt"]
+    },
+    "BedInventory": {
+      "title": "BedInventory",
+      "description": "Hospital bed unit with ward type, room/bed number, and occupancy.",
+      "type": "object",
+      "properties": {
+        "hospitalId": { "type": "string" },
+        "hospitalName": { "type": "string" },
+        "wardType": { "type": "string", "enum": ["GENERAL", "ICU", "EMERGENCY", "PRIVATE"] },
+        "roomNumber": { "type": "string" },
+        "bedNumber": { "type": "string" },
+        "occupied": { "type": "boolean" },
+        "currentAdmissionId": { "type": "string" },
+        "adminUid": { "type": "string" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["hospitalId", "hospitalName", "wardType", "roomNumber", "bedNumber", "occupied", "adminUid", "updatedAt"]
+    },
+    "Admission": {
+      "title": "Admission",
+      "description": "Inpatient hospital admission and discharge tracking.",
+      "type": "object",
+      "properties": {
+        "hospitalId": { "type": "string" },
+        "hospitalName": { "type": "string" },
+        "bedId": { "type": "string" },
+        "roomNumber": { "type": "string" },
+        "bedNumber": { "type": "string" },
+        "wardType": { "type": "string" },
+        "patientId": { "type": "string" },
+        "patientName": { "type": "string" },
+        "patientPhone": { "type": "string" },
+        "diagnosis": { "type": "string" },
+        "admittingDoctorName": { "type": "string" },
+        "status": { "type": "string", "enum": ["ADMITTED", "DISCHARGED"] },
+        "dischargeNotes": { "type": "string" },
+        "adminUid": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["hospitalId", "hospitalName", "bedId", "roomNumber", "bedNumber", "wardType", "patientId", "patientName", "diagnosis", "status", "adminUid", "createdAt", "updatedAt"]
+    },
+    "Prescription": {
+      "title": "Prescription",
+      "description": "Doctor digital prescription linked to patient and consultation/appointment.",
+      "type": "object",
+      "properties": {
+        "patientId": { "type": "string" },
+        "patientName": { "type": "string" },
+        "doctorId": { "type": "string" },
+        "doctorName": { "type": "string" },
+        "doctorUid": { "type": "string" },
+        "hospitalId": { "type": "string" },
+        "hospitalName": { "type": "string" },
+        "appointmentId": { "type": "string" },
+        "diagnosis": { "type": "string" },
+        "medications": { "type": "array" },
+        "notes": { "type": "string" },
+        "verifiedForPharmacy": { "type": "boolean" },
+        "adminUid": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["patientId", "patientName", "doctorId", "doctorName", "hospitalId", "diagnosis", "medications", "verifiedForPharmacy", "adminUid", "createdAt", "updatedAt"]
+    },
+    "MedicalReport": {
+      "title": "MedicalReport",
+      "description": "Blood test, X-ray, scan, history, and uploaded patient medical records.",
+      "type": "object",
+      "properties": {
+        "patientId": { "type": "string" },
+        "patientName": { "type": "string" },
+        "doctorId": { "type": "string" },
+        "doctorName": { "type": "string" },
+        "doctorUid": { "type": "string" },
+        "hospitalId": { "type": "string" },
+        "title": { "type": "string" },
+        "reportType": { "type": "string", "enum": ["BLOOD_TEST", "XRAY", "SCAN", "UPLOADED_DOC", "HISTORY"] },
+        "summary": { "type": "string" },
+        "findings": { "type": "string" },
+        "attachmentUri": { "type": "string" },
+        "authorizedDoctorUids": { "type": "array" },
+        "adminUid": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["patientId", "patientName", "title", "reportType", "summary", "authorizedDoctorUids", "adminUid", "createdAt", "updatedAt"]
+    },
+    "Medicine": {
+      "title": "Medicine",
+      "description": "Pharmacy medicine catalog item.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "dosage": { "type": "string" },
+        "timing": { "type": "string" },
+        "price": { "type": "number" },
+        "stockQuantity": { "type": "integer" },
+        "requiresPrescription": { "type": "boolean" },
+        "category": { "type": "string" },
+        "description": { "type": "string" },
+        "imageKey": { "type": "string" },
+        "hospitalId": { "type": "string" },
+        "adminUid": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "dosage", "timing", "price", "stockQuantity", "requiresPrescription", "category", "adminUid", "createdAt", "updatedAt"]
+    },
+    "PharmacyOrder": {
+      "title": "PharmacyOrder",
+      "description": "Medicine delivery order with pharmacist prescription verification.",
+      "type": "object",
+      "properties": {
+        "patientId": { "type": "string" },
+        "patientName": { "type": "string" },
+        "deliveryAddress": { "type": "string" },
+        "itemsSummary": { "type": "string" },
+        "medicineIds": { "type": "array" },
+        "totalAmount": { "type": "number" },
+        "requiresPrescription": { "type": "boolean" },
+        "prescriptionRefId": { "type": "string" },
+        "prescriptionAttachmentUri": { "type": "string" },
+        "pharmacistVerified": { "type": "boolean" },
+        "paymentStatus": { "type": "string", "enum": ["PENDING", "PAID"] },
+        "orderStatus": { "type": "string", "enum": ["AWAITING_VERIFICATION", "VERIFIED", "PACKED", "OUT_FOR_DELIVERY", "DELIVERED", "REJECTED"] },
+        "transactionId": { "type": "string" },
+        "adminUid": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["patientId", "patientName", "deliveryAddress", "itemsSummary", "medicineIds", "totalAmount", "requiresPrescription", "pharmacistVerified", "paymentStatus", "orderStatus", "adminUid", "createdAt", "updatedAt"]
+    },
+    "Ambulance": {
+      "title": "Ambulance",
+      "description": "Ambulance vehicle and live availability.",
+      "type": "object",
+      "properties": {
+        "hospitalId": { "type": "string" },
+        "hospitalName": { "type": "string" },
+        "vehicleNumber": { "type": "string" },
+        "driverName": { "type": "string" },
+        "driverPhone": { "type": "string" },
+        "vehicleType": { "type": "string", "enum": ["ALS", "BLS", "ICU_MOBILE"] },
+        "available": { "type": "boolean" },
+        "currentBookingId": { "type": "string" },
+        "adminUid": { "type": "string" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["hospitalId", "hospitalName", "vehicleNumber", "driverName", "driverPhone", "vehicleType", "available", "adminUid", "updatedAt"]
+    },
+    "EmergencyRequest": {
+      "title": "EmergencyRequest",
+      "description": "Emergency bed booking or ambulance dispatch request.",
+      "type": "object",
+      "properties": {
+        "patientId": { "type": "string" },
+        "patientName": { "type": "string" },
+        "patientPhone": { "type": "string" },
+        "hospitalId": { "type": "string" },
+        "hospitalName": { "type": "string" },
+        "ambulanceId": { "type": "string" },
+        "driverName": { "type": "string" },
+        "driverPhone": { "type": "string" },
+        "pickupLocation": { "type": "string" },
+        "emergencyType": { "type": "string" },
+        "requestType": { "type": "string", "enum": ["AMBULANCE", "EMERGENCY_BED"] },
+        "etaMinutes": { "type": "integer" },
+        "status": { "type": "string", "enum": ["REQUESTED", "DISPATCHED", "EN_ROUTE", "ARRIVED", "COMPLETED", "CANCELLED"] },
+        "adminUid": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["patientId", "patientName", "hospitalId", "hospitalName", "pickupLocation", "emergencyType", "requestType", "status", "adminUid", "createdAt", "updatedAt"]
+    },
+    "Consultation": {
+      "title": "Consultation",
+      "description": "Online video, audio, or chat doctor consultation.",
+      "type": "object",
+      "properties": {
+        "patientId": { "type": "string" },
+        "patientName": { "type": "string" },
+        "doctorId": { "type": "string" },
+        "doctorName": { "type": "string" },
+        "doctorUid": { "type": "string" },
+        "hospitalId": { "type": "string" },
+        "hospitalName": { "type": "string" },
+        "mode": { "type": "string", "enum": ["VIDEO", "AUDIO", "CHAT"] },
+        "scheduledTime": { "type": "string" },
+        "fee": { "type": "number" },
+        "paymentStatus": { "type": "string", "enum": ["PENDING", "PAID"] },
+        "status": { "type": "string", "enum": ["SCHEDULED", "LIVE", "COMPLETED", "CANCELLED"] },
+        "roomCode": { "type": "string" },
+        "adminUid": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["patientId", "patientName", "doctorId", "doctorName", "hospitalId", "mode", "scheduledTime", "fee", "paymentStatus", "status", "roomCode", "adminUid", "createdAt", "updatedAt"]
+    },
+    "ConsultationMessage": {
+      "title": "ConsultationMessage",
+      "description": "Real-time chat message inside an online consultation.",
+      "type": "object",
+      "properties": {
+        "consultationId": { "type": "string" },
+        "senderId": { "type": "string" },
+        "senderName": { "type": "string" },
+        "senderRole": { "type": "string" },
+        "patientId": { "type": "string" },
+        "doctorUid": { "type": "string" },
+        "adminUid": { "type": "string" },
+        "text": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["consultationId", "senderId", "senderName", "senderRole", "patientId", "adminUid", "text", "createdAt"]
+    },
+    "Invoice": {
+      "title": "Invoice",
+      "description": "CareNex itemized hospital/pharmacy/consultation invoice.",
+      "type": "object",
+      "properties": {
+        "invoiceNumber": { "type": "string" },
+        "patientId": { "type": "string" },
+        "patientName": { "type": "string" },
+        "hospitalId": { "type": "string" },
+        "hospitalName": { "type": "string" },
+        "doctorName": { "type": "string" },
+        "referenceType": { "type": "string", "enum": ["APPOINTMENT", "PHARMACY", "CONSULTATION", "ADMISSION"] },
+        "referenceId": { "type": "string" },
+        "consultationCharges": { "type": "number" },
+        "medicineCharges": { "type": "number" },
+        "otherCharges": { "type": "number" },
+        "totalAmount": { "type": "number" },
+        "paymentMethod": { "type": "string" },
+        "paymentStatus": { "type": "string", "enum": ["PENDING", "PAID", "FAILED"] },
+        "transactionId": { "type": "string" },
+        "adminUid": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["invoiceNumber", "patientId", "patientName", "hospitalName", "referenceType", "referenceId", "consultationCharges", "medicineCharges", "otherCharges", "totalAmount", "paymentMethod", "paymentStatus", "adminUid", "createdAt", "updatedAt"]
+    },
+    "Payment": {
+      "title": "Payment",
+      "description": "Verified UPI gateway payment record (never stores PINs or credentials).",
+      "type": "object",
+      "properties": {
+        "invoiceId": { "type": "string" },
+        "patientId": { "type": "string" },
+        "amount": { "type": "number" },
+        "gatewayApp": { "type": "string", "enum": ["GOOGLE_PAY", "PHONEPE", "UPI_INTENT"] },
+        "upiHandle": { "type": "string" },
+        "transactionId": { "type": "string" },
+        "gatewayResponseCode": { "type": "string" },
+        "status": { "type": "string", "enum": ["INITIATED", "VERIFIED", "FAILED"] },
+        "adminUid": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["invoiceId", "patientId", "amount", "gatewayApp", "transactionId", "status", "adminUid", "createdAt", "updatedAt"]
+    },
+    "AppNotification": {
+      "title": "AppNotification",
+      "description": "Real-time notification for appointments, payments, reports, pharmacy, and ambulance.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "title": { "type": "string" },
+        "message": { "type": "string" },
+        "category": { "type": "string", "enum": ["APPOINTMENT", "PAYMENT", "PHARMACY", "REPORT", "AMBULANCE", "EMERGENCY"] },
+        "read": { "type": "boolean" },
+        "referenceId": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "title", "message", "category", "read", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/admins/{adminId}": {
+      "schema": { "$ref": "#/entities/AdminRole" },
+      "description": "Authorized hospital administrators."
+    },
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/UserProfile" },
+      "description": "User profiles isolated to owner and admin."
+    },
+    "/hospitals/{hospitalId}": {
+      "schema": { "$ref": "#/entities/Hospital" },
+      "description": "Hospitals with live bed and emergency availability."
+    },
+    "/doctors/{doctorId}": {
+      "schema": { "$ref": "#/entities/Doctor" },
+      "description": "Doctor profiles and schedules."
+    },
+    "/doctor_slots/{slotId}": {
+      "schema": { "$ref": "#/entities/DoctorSlot" },
+      "description": "Atomic daily OPD slot counters."
+    },
+    "/appointments/{appointmentId}": {
+      "schema": { "$ref": "#/entities/Appointment" },
+      "description": "OPD appointments."
+    },
+    "/bed_inventory/{bedId}": {
+      "schema": { "$ref": "#/entities/BedInventory" },
+      "description": "Hospital bed inventory."
+    },
+    "/admissions/{admissionId}": {
+      "schema": { "$ref": "#/entities/Admission" },
+      "description": "Inpatient admissions and discharges."
+    },
+    "/prescriptions/{prescriptionId}": {
+      "schema": { "$ref": "#/entities/Prescription" },
+      "description": "Digital prescriptions."
+    },
+    "/medical_reports/{reportId}": {
+      "schema": { "$ref": "#/entities/MedicalReport" },
+      "description": "Medical records and uploaded reports."
+    },
+    "/medicines/{medicineId}": {
+      "schema": { "$ref": "#/entities/Medicine" },
+      "description": "Pharmacy medicine catalog."
+    },
+    "/pharmacy_orders/{orderId}": {
+      "schema": { "$ref": "#/entities/PharmacyOrder" },
+      "description": "Pharmacy orders with prescription check."
+    },
+    "/ambulances/{ambulanceId}": {
+      "schema": { "$ref": "#/entities/Ambulance" },
+      "description": "Ambulance fleet and live availability."
+    },
+    "/emergency_requests/{requestId}": {
+      "schema": { "$ref": "#/entities/EmergencyRequest" },
+      "description": "Emergency bed and ambulance requests."
+    },
+    "/consultations/{consultationId}": {
+      "schema": { "$ref": "#/entities/Consultation" },
+      "description": "Online consultations."
+    },
+    "/consultations/{consultationId}/messages/{messageId}": {
+      "schema": { "$ref": "#/entities/ConsultationMessage" },
+      "description": "Real-time consultation chat messages."
+    },
+    "/invoices/{invoiceId}": {
+      "schema": { "$ref": "#/entities/Invoice" },
+      "description": "Billing invoices."
+    },
+    "/payments/{paymentId}": {
+      "schema": { "$ref": "#/entities/Payment" },
+      "description": "Payment gateway transaction logs."
+    },
+    "/notifications/{notificationId}": {
+      "schema": { "$ref": "#/entities/AppNotification" },
+      "description": "User alerts and notifications."
+    }
+  }
+}

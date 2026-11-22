@@ -1,0 +1,6 @@
+{
+  "name": "CareNex",
+  "description": "Complete healthcare management app with Patient, Hospital Admin, and Doctor portals, real-time OPD appointments, bed management, emergency & ambulance services, pharmacy, medical records, consultations, and billing.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
